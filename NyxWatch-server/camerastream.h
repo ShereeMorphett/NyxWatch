@@ -3,8 +3,9 @@
 
 #include <QObject>
 #include <QCamera>
-#include <QVideoSink>
+#include <expected>
 #include <QMediaCaptureSession>
+#include <QVideoSink>
 
 class CameraStream : public QObject
 {
@@ -16,9 +17,15 @@ private:
     QMediaCaptureSession m_captureSession; // TODO:: NEED TO WORK THIS OUT FURTHER - https://doc.qt.io/qt-6/qmediacapturesession.html
     bool m_isStreaming;
 
+
 public:
     bool const isStreaming() { return m_isStreaming; };
     explicit CameraStream(QObject *parent = nullptr);
+
+    // TODO:: impliment these, set up audio streaming, pitch QExpected to core team.........
+    std::expected<bool, std::string> streamingStarted();
+    std::expected<bool, std::string> streamingStopped();
+    std::expected<bool, std::string> checkConnection();
 };
 
 #endif // CAMERASTREAM_H
