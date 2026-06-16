@@ -4,6 +4,24 @@
 
 #include "camerastream.h"
 
+
+// TODO:: impliment these, set up audio streaming, pitch QExpected to core team.........
+std::expected<bool, std::string> CameraStream::streamingStarted()
+{
+    return std::unexpected("Error: Streaming failed to start");
+};
+
+std::expected<bool, std::string> CameraStream::streamingStopped()
+{
+    return std::unexpected("Error: Streaming failed to stop");
+};
+
+std::expected<bool, std::string> CameraStream::checkConnection()
+{
+    return std::unexpected("Error: No Connection found");
+};
+
+
 CameraStream::CameraStream(QObject* parent) : QObject(parent) {
 
     if (QMediaDevices::videoInputs().empty()) {
