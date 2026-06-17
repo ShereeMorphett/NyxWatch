@@ -5,15 +5,52 @@
 #include "camerastream.h"
 
 
+
+void CameraStream::handleCameraError(QCamera::Error error, const QString &errorString)
+{
+    m_isStreaming = false;
+
+    qCritical() << "[NyxWatch Server] Native Camera Error Encounted!";
+    qCritical() << "   Error Code:" << error;
+    qCritical() << "   Details:" << errorString;
+}
+
+
 // TODO:: impliment these, set up audio streaming, pitch QExpected to core team.........
 std::expected<bool, std::string> CameraStream::streamingStarted()
 {
-    return std::unexpected("Error: Streaming failed to start");
+    if (!m_camera)
+        return std::unexpected("Error: No camera detected");
+    if (m_isStreaming)
+        return std::unexpected("Error: Stream is already running");
+
+    qInfo() << "[NyxWatch Server]: Camera stream starting";
+    m_camera->start();
+    m_isStreaming = true;
+    return true;
 };
 
 std::expected<bool, std::string> CameraStream::streamingStopped()
 {
-    return std::unexpected("Error: Streaming failed to stop");
+    if (!m_isStreaming)
+        return std::unexpected("Error: Stream is not currently running");
+    if (!m_camera)
+        return std::unexpected("Error: No camera detected");
+
+    qInfo() << "[NyxWatch Server]: Camera stream stopping";
+    m_camera->stop();
+    m_isStreaming = false;
+    return true;
+};
+
+void CameraStream::handleNewFrame(const QVideoFrame &frame)
+{
+    qInfo() << "-----------------------------------------";
+    qDebug() << "woo handle new frame called";
+    qDebug() << "It is valid?:   " << frame.isValid();
+    qDebug() << "It is readable?:   " << frame.isReadable();
+    qInfo() << "-----------------------------------------";
+
 };
 
 std::expected<bool, std::string> CameraStream::checkConnection()
@@ -22,7 +59,9 @@ std::expected<bool, std::string> CameraStream::checkConnection()
 };
 
 
-CameraStream::CameraStream(QObject* parent) : QObject(parent) {
+CameraStream::CameraStream(QObject* parent) : QObject(parent), m_camera(nullptr),
+                                            m_videoSink(nullptr), m_isStreaming(false) {
+
 
     if (QMediaDevices::videoInputs().empty()) {
         qCritical() << "No camera detected on the Raspberry Pi!";
@@ -45,5 +84,9 @@ CameraStream::CameraStream(QObject* parent) : QObject(parent) {
     m_captureSession.setCamera(m_camera);
     m_captureSession.setVideoSink(m_videoSink);
 
+    connect(m_videoSink, &QVideoSink::videoFrameChanged,
+            this, &CameraStream::handleNewFrame);
+    connect(m_camera, &QCamera::errorOccurred,
+            this, &CameraStream::handleCameraError);
 
 }

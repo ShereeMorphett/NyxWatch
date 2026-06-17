@@ -17,7 +17,9 @@ private:
     QMediaCaptureSession m_captureSession; // TODO:: NEED TO WORK THIS OUT FURTHER - https://doc.qt.io/qt-6/qmediacapturesession.html
     bool m_isStreaming;
 
-
+private slots:
+    void handleNewFrame(const QVideoFrame &frame);
+    void handleCameraError(QCamera::Error error, const QString &errorString);
 public:
     bool const isStreaming() { return m_isStreaming; };
     explicit CameraStream(QObject *parent = nullptr);
