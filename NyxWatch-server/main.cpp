@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     qDebug() << "program starting";
     qDebug() << "Calling camera stream";
     CameraStream stream;
-    // Start the stream using your clean std::expected pattern
+
     auto result = stream.streamingStarted();
 
     if (!result) {
