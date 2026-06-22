@@ -9,13 +9,13 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Multimedia)
+find_package(Qt6 REQUIRED COMPONENTS Network)
 
 add_executable(NyxWatch-server main.cpp
-    camerastream.h camerastream.cpp)
+    camerastream.h camerastream.cpp
+    networkserver.h networkserver.cpp)
 
-target_link_libraries(NyxWatch-server PRIVATE Qt6::Core Qt6::Multimedia)
-
-
+target_link_libraries(NyxWatch-server PRIVATE Qt6::Core Qt6::Multimedia Qt6::Network)
 
 include(GNUInstallDirs)
 install(TARGETS NyxWatch-server
