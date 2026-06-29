@@ -13,7 +13,8 @@ find_package(Qt6 REQUIRED COMPONENTS Network)
 
 add_executable(NyxWatch-server main.cpp
     camerastream.h camerastream.cpp
-    networkserver.h networkserver.cpp)
+    networkserver.h networkserver.cpp
+    audiostream.h audiostream.cpp)
 
 target_link_libraries(NyxWatch-server PRIVATE Qt6::Core Qt6::Multimedia Qt6::Network)
 

@@ -1,35 +1,32 @@
 #pragma once
 
 #include <QObject>
+#include <QTcpSocket>
 #include <QVideoSink>
 #include <QVideoFrame>
+#include <QtQml/qqmlregistration.h> // This needs to be handled a better way
 
 class ClientStream : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
     Q_PROPERTY(QVideoSink* videoSink READ videoSink WRITE setVideoSink NOTIFY videoSinkChanged)
 
 private:
     QVideoSink* m_videoSink = nullptr;
+    QTcpSocket* m_tcpSocket = nullptr;
+
+    void parseIncomingPackets();
 
 signals:
     void videoSinkChanged();
 
 public:
-    explicit ClientStream(QObject *parent = nullptr) : QObject(parent) {}
+    explicit ClientStream(QObject *parent = nullptr);
 
-    QVideoSink* videoSink() const { return m_videoSink; }
-    void setVideoSink(QVideoSink* sink) {
-        if (m_videoSink != sink) {
-            m_videoSink = sink;
-            emit videoSinkChanged();
-        }
-    }
+   Q_INVOKABLE void connectToServer(const QString &host, quint16 port); // investigate this further
 
-    // You will call this function whenever a full frame arrives over your network socket
-    void processIncomingFrame(const QVideoFrame &frame) {
-        if (m_videoSink) {
-            m_videoSink->setVideoFrame(frame); // This instantly renders it in QML
-        }
-    }
+   QVideoSink* videoSink() const;
+   void setVideoSink(QVideoSink* sink);
+   void processIncomingFrame(const QVideoFrame &frame);
 };
