@@ -1,4 +1,3 @@
-
 #include <QDebug>
 #include <QMediaDevices>
 
@@ -44,7 +43,6 @@ void CameraStream::handleNewFrame(const QVideoFrame &frame)
 {
     if (!frame.isValid())
         return;
-    // passes to network server
     emit frameCaptured(frame);
 }
 

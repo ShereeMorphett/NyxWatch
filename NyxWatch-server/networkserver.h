@@ -20,6 +20,7 @@ private slots:
 public slots:
     // receives frames from the CameraStream
     void broadcastFrame(const QVideoFrame &frame);
+    void broadcastAudioLevel(double rms, int16_t maxAmplitude);
 
 
 public:

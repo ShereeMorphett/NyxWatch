@@ -1,10 +1,11 @@
 #pragma once
 
-#include <QObject>
-#include <QCamera>
 #include <expected>
+#include <QAudioDevice>
+#include <QAudioSource>
+#include <QCamera>
 #include <QMediaCaptureSession>
-
+#include <QObject>
 
 // https://doc.qt.io/qt-6/qaudiodevice.html
 
@@ -13,24 +14,22 @@ class AudioStream : public QObject
     Q_OBJECT
 
 private:
-    QCamera *m_camera;
-
-    QMediaCaptureSession m_captureSession; // TODO:: NEED TO WORK THIS OUT FURTHER - https://doc.qt.io/qt-6/qmediacapturesession.html
+    QAudioSource *m_audioSource;
+    QIODevice *m_audioSourceDevice; // The internal data stream pipe
     bool m_isStreaming;
 
 signals:
-    void frameCaptured(const QVideoFrame &frame);
+    void audioLevelsCalculated(double rms, int16_t maxAmplitude);
 
 private slots:
-    void handleNewFrame(const QVideoFrame &frame);
-    void handleCameraError(QCamera::Error error, const QString &errorString);
+    void handleAudioDataReady(); // fires when bytes hit the mic buffer
+
+
 
 public:
     bool const isStreaming() { return m_isStreaming; };
     explicit AudioStream(QObject *parent = nullptr);
+    std::expected<bool, std::string> startAudioCapture();
+    std::expected<bool, std::string> stopAudioCapture();
 
-    // TODO:: impliment these, set up audio streaming, pitch QExpected to core team.........
-    std::expected<bool, std::string> audioStreamingStarted();
-    std::expected<bool, std::string> audioStreamingStopped();
-    std::expected<bool, std::string> checkConnection();
 };
