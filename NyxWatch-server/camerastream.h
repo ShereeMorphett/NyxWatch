@@ -1,5 +1,4 @@
-#ifndef CAMERASTREAM_H
-#define CAMERASTREAM_H
+#pragma once
 
 #include <QObject>
 #include <QCamera>
@@ -17,6 +16,12 @@ private:
     QMediaCaptureSession m_captureSession; // TODO:: NEED TO WORK THIS OUT FURTHER - https://doc.qt.io/qt-6/qmediacapturesession.html
     bool m_isStreaming;
 
+signals:
+    void frameCaptured(const QVideoFrame &frame);
+
+private slots:
+    void handleNewFrame(const QVideoFrame &frame);
+    void handleCameraError(QCamera::Error error, const QString &errorString);
 
 public:
     bool const isStreaming() { return m_isStreaming; };
@@ -27,5 +32,3 @@ public:
     std::expected<bool, std::string> streamingStopped();
     std::expected<bool, std::string> checkConnection();
 };
-
-#endif // CAMERASTREAM_H
