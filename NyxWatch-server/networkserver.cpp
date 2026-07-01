@@ -18,11 +18,11 @@ void NetworkServer::broadcastFrame(const QVideoFrame &frame)
         int height = format.frameSize().height();
         int pixelFormat = static_cast<int>(format.pixelFormat());
 
-        // Prepare our network packet buffer
         QByteArray packetBuffer;
         QDataStream stream(&packetBuffer, QIODevice::WriteOnly);
-        stream.setVersion(QDataStream::Qt_6_5); // Keep streams version predictable
+        stream.setVersion(QDataStream::Qt_6_5);
 
+        stream << (quint32)1; //TODO: this needs to be done better, I want it to have a macro or something so it is more readable
         stream << (quint32)bytesCount;
         stream << (quint32)width;
         stream << (quint32)height;
@@ -41,6 +41,25 @@ void NetworkServer::broadcastFrame(const QVideoFrame &frame)
         qWarning() << "[NetworkServer] Failed to map video frame to CPU memory.";
     }
 
+}
+
+void NetworkServer::broadcastAudioLevel(double rms, int16_t maxAmplitude)
+{
+    if (m_clientSockets.isEmpty()) return;
+
+    QByteArray packetBuffer;
+    QDataStream stream(&packetBuffer, QIODevice::WriteOnly);
+    stream.setVersion(QDataStream::Qt_6_5);
+
+    stream << (quint32)2; //TODO: this needs to be done better, I want it to have a macro or something so it is more readable 1 = video, 2 = audio
+    stream << (float)rms; // Sending as float makes parsing across platforms reliable, DO  NOT CHANGE THIS
+    stream << (quint16)maxAmplitude;
+
+    for (QTcpSocket *client : m_clientSockets) {
+        if (client->state() == QAbstractSocket::ConnectedState) {
+            client->write(packetBuffer);
+        }
+    }
 }
 
 void NetworkServer::handleNewConnection()

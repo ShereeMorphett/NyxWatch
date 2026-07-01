@@ -20,11 +20,12 @@ private:
 
 signals:
     void videoSinkChanged();
+    void soundAlertTriggered(double level);
 
 public:
     explicit ClientStream(QObject *parent = nullptr);
 
-   Q_INVOKABLE void connectToServer(const QString &host, quint16 port); // investigate this further
+   Q_INVOKABLE void connectToServer(const QString &host, quint16 port);
 
    QVideoSink* videoSink() const;
    void setVideoSink(QVideoSink* sink);
